@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://xmlns.jcp.org/jsf/html" 
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:jsf="http://xmlns.jcp.org/jsf">
+    <h:head>
+        <title>Login</title>
+
+        <link href="resources/css/modal.css" rel="stylesheet" type="text/css"/>
+
+    </h:head>
+
+    <body>
+        <section class="hero news alternate">
+            <div class="grid-container">
+                <div class="cell">
+                    <div class="annotation">SISTEMA DE PÓLIZAS V23.01.24</div>
+                    <h1>Coloidales Duché S.A. de C.V.</h1>
+                </div>
+            </div>
+        </section> 
+
+        <h:form id="formLogin" class="modal-content" style="text-align: center">
+            <p:growl id="mensaje" showSummary="true" life="50000" showDetail="true"/>
+            <p:blockUI block="formLogin" trigger="inicio">   
+                <p:graphicImage value="resources/img/process.gif" height="120px" width="120px"/>
+            </p:blockUI>
+            <p:growl id="mensajeGeneral" sticky="true" showDetail="true" life="3000" />
+            <div class="imgcontainer">
+                <img src="resources/img/login.jpg" alt="Login" class="avatar"/>
+                <br></br>
+                <br></br>
+                <label for="uname"><b>USUARIO</b></label>
+                <input type="text" name="uname" jsf:value="#{login.usuario.nombre}" placeholder="Ingresa tu usuario"
+                       required="true" label="username" jsf:requiredMessage="REQUIERE USUARIO" jsf:label="REQUIERE USUARIO" />
+                <label for="psw"><b>CONTRASEÑA</b></label>
+                <input type="password" name="psw" placeholder="Ingresa tu password"
+                       jsf:value="#{login.usuario.clave}" required="true" jsf:label="REQUIERE CONTRASEÑA"
+                       label="password"
+                       jsf:requiredMessage="REQUIERE PASSWORD" />
+                <p:commandButton id="inicio" update="formLogin" value="LOGIN" 
+                                 actionListener="#{login.login(event)}"
+                                 oncomplete="handleLoginRequest(xhr, status, args)" 
+                                 style="background-color: #1D60A4; color: #FFFFFF; font-family: 'Rajdhani', sans-serif !important">
+                </p:commandButton>
+            </div>
+            <!--            <input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:1"
+                               value="-7292066430460949081:-4987350607752016894"
+                               autocomplete="off" />-->
+        </h:form>
+
+
+
+        <script>
+            // Get the modal
+            var modal = document.getElementById('id01');
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        </script>
+
+        <script type="text/javascript">
+            function handleLoginRequest(xhr, status, args) {
+                if (args.validationFailed || !args.loggedIn) {
+                    jQuery('#formLogin').jq.effect("shake", {times: 1}, 100);
+                } else {
+                    location.href = args.ruta;
+                }
+            }
+        </script>
+
+    </body>
+
+</html>

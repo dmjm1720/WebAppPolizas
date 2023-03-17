@@ -1,0 +1,46 @@
+form {
+  width: 300px;
+  margin: 40px auto;
+  text-align: center;
+  padding: 15px;
+  height: 210px;
+  position: relative
+}
+
+form.appear {
+  background-color: #EEE
+}
+
+form h1 {
+  color: #666;
+  font-weight: 900;
+  font-size: 35px;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+form input[type="text"],
+form input[type="password"] {
+  padding: 10px;
+  display: block;
+  margin-bottom: 15px
+}
+
+form input[type="submit"] {
+  background-color: #F00;
+  color: #FFF;
+  border: 1px solid #F00;
+  padding: 10px 20px;
+  position: absolute;
+  left: 50%;
+  bottom: 190px;
+  width: 123px;
+  height: 40px;
+  margin-left: -61px
+}
+
+form input[type="text"],
+form input[type="password"],
+h1 {
+  display: none
+}

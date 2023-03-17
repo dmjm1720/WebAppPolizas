@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+
+    </h:head>
+    <h:body>
+        <ui:composition template="/template/Template.xhtml">
+
+            <ui:define name="content">
+
+                <!--Formulario principal-->
+
+                <h:form id="frmPrincipal">
+                    <p:blockUI widgetVar="loading" trigger="btnBuscar" block="frmPrincipal:a1:tblClientes">
+                        <h:panelGrid styleClass="custom-painelgrid-center">
+                            <h:outputText value="Espere..." />
+                            <p:graphicImage value="../resources/img/cargando.gif" />
+                        </h:panelGrid>
+                    </p:blockUI>
+                    <p:growl id="msgs" showDetail="true"
+                             skipDetailIfEqualsSummary="true" />
+
+                    <div style="text-align: center">
+                        <p:badge value="MÓDULO DE GENERACIÓN DE PÓLIZAS"  styleClass="rojo etiqueta" />
+                    </div>
+                    <p:panelGrid columns="7"  layout="grid">
+
+                        <p:badge value="FECHA INICIAL" styleClass="pear" />
+                        <p:datePicker id="f1" value="#{poliza.fec1}"
+                                      pattern="yyyy-MM-dd" showIcon="true">
+                        </p:datePicker>
+                        <p:badge value="FECHA FINAL" styleClass="pear" />
+                        <p:datePicker id="f2" value="#{poliza.fec2}"
+                                      pattern="yyyy-MM-dd" showIcon="true">
+                        </p:datePicker>
+                        <p:commandButton id="btnBuscar" value="BUSCAR FACTURAS" 
+                                         icon="pi pi-search" 
+                                         styleClass="etiqueta"
+                                         update="frmPrincipal:a1:tblClientes"
+                                         actionListener="#{poliza.listarFacturasPendientes()}"
+                                         />
+
+                        <p:commandButton value="GENERAR PÓLIZAS" 
+                                         icon="pi pi-cog" 
+                                         update="frmPrincipal:a1:tblClientes"
+                                         styleClass="etiqueta verde"
+                                         actionListener="#{poliza.generarPoliza()}"
+                                         />
+                    </p:panelGrid>
+                    <p:divider/>
+                    <div style="text-align: center">
+                        <p:badge value="LISTA DE FACTURAS PENDIENTES PARA GENERACIÓN DE PÓLIZAS EN COI" styleClass="etiqueta" />
+                    </div>
+                    <p:divider/>
+                    <p:accordionPanel id="a1">
+                        <p:tab title="FACTURAS PENDIENTES">
+                            <p:dataTable id="tblClientes" styleClass="tabla" reflow="true"
+                                         scrollable="true" 
+                                         scrollHeight="250"
+                                         var="c" 
+                                         rowHover="true"
+                                         size="Registros #{poliza.lista.size()}"
+                                         paginator="true"
+                                         paginatorPosition=""
+                                         paginatorAlwaysVisible="true"
+                                         value="#{poliza.lista}" 
+                                         emptyMessage="NO HAY REGISTROS">
+
+                                <p:column headerText="FECHA FACTURA">
+                                    <h:outputText value="#{c.fechaDoc}" style="color: #2196F3; font-weight: bolder; font-size: small"/>
+                                </p:column>
+
+                                <p:column headerText="FACTURA">
+                                    <h:outputText value="#{c.cveDoc}" style="color: #036FAB; font-weight: bolder; font-size: small"/>
+                                </p:column>
+
+                                <p:column headerText="NOMBRE PROVEEDOR">
+                                    <h:outputText value="#{c.nombreProveedor}" style="color: #2196F3; font-weight: bolder; font-size: small"/>
+                                </p:column> 
+
+                                <p:column headerText="IMPORTE IEPS">
+                                    <h:outputText value="$#{c.impTot1}" style="color: #036FAB; font-weight: bolder; font-size: small">
+                                        <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column> 
+
+                                <p:column headerText="IMPORTE IVA">
+                                    <h:outputText value="#{c.impTot4}" style="color: #2196F3; font-weight: bolder; font-size: small">
+                                        <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column> 
+
+                                <p:column headerText="IMPORTE">
+                                    <h:outputText value="$#{c.importe}" style="color: #036FAB; font-weight: bolder; font-size: small">
+                                        <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
+                                    </h:outputText>
+                                </p:column> 
+
+                            </p:dataTable>
+                        </p:tab>
+                    </p:accordionPanel>
+
+
+                    <script>
+                        PrimeFaces.locales['es'] = {
+                            closeText: 'Cerrar',
+                            prevText: 'Anterior',
+                            nextText: 'Siguiente',
+                            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                            dayNamesMin: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                            weekHeader: 'Semana',
+                            firstDay: 1,
+                            isRTL: false,
+                            showMonthAfterYear: false,
+                            yearSuffix: '',
+                            timeOnlyTitle: 'Sólo hora',
+                            timeText: 'Tiempo',
+                            hourText: 'Hora',
+                            minuteText: 'Minuto',
+                            secondText: 'Segundo',
+                            millisecondText: 'Milisegundo',
+                            currentText: 'Fecha actual',
+                            ampm: false,
+                            month: 'Mes',
+                            week: 'Semana',
+                            day: 'Día',
+                            allDayText: 'Todo el día',
+                            today: 'Hoy',
+                            clear: 'Claro'
+                        };
+                    </script>
+
+                </h:form>
+
+
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
