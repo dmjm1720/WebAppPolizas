@@ -3,7 +3,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
 
     <h:head>
 
@@ -38,73 +39,81 @@
                         <p:datePicker id="f2" value="#{poliza.fec2}"
                                       pattern="yyyy-MM-dd" showIcon="true">
                         </p:datePicker>
+                        <p:badge value="SELECCIONA CLIENTE" styleClass="pear" />
+                        <p:autoComplete id="byFactura" size="40" placeholder="INGRESA NOMBRE DE CLIENTE" 
+                                        dropdown="true" value="#{poliza.filtroCliente}" 
+                                        completeMethod="#{poliza.completeCliente}"/>    
+
                         <p:commandButton id="btnBuscar" value="BUSCAR FACTURAS" 
                                          icon="pi pi-search" 
                                          styleClass="etiqueta"
                                          update="frmPrincipal:a1:tblClientes"
                                          actionListener="#{poliza.listarFacturasPendientes()}"
                                          />
-
-                        <p:commandButton value="GENERAR PÓLIZAS" 
-                                         icon="pi pi-cog" 
-                                         update="frmPrincipal:a1:tblClientes"
-                                         styleClass="etiqueta verde"
-                                         actionListener="#{poliza.generarPoliza()}"
-                                         />
                     </p:panelGrid>
                     <p:divider/>
                     <div style="text-align: center">
-                        <p:badge value="LISTA DE FACTURAS PENDIENTES PARA GENERACIÓN DE PÓLIZAS EN COI" styleClass="etiqueta" />
+                        <p:badge id="polpend"  value="LISTA DE FACTURAS PENDIENTES PARA GENERACIÓN DE PÓLIZAS EN COI" styleClass="etiqueta" />
                     </div>
                     <p:divider/>
                     <p:accordionPanel id="a1">
-                        <p:tab title="FACTURAS PENDIENTES">
-                            <p:dataTable id="tblClientes" styleClass="tabla" reflow="true"
+
+                        <p:tab title="FACTURAS">
+                            <p:dataTable id="tblClientes" styleClass="tabla" 
+                                         var="item" 
+                                         sortMode="multiple"
                                          scrollable="true" 
-                                         scrollHeight="250"
-                                         var="c" 
+                                         scrollHeight="350"
+                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="10,20,50,100,200,500" 
+                                         rows="10" 
+                                         paginator="true" 
+                                         reflow="true"
                                          rowHover="true"
-                                         size="Registros #{poliza.lista.size()}"
-                                         paginator="true"
-                                         paginatorPosition=""
+                                         resizeMode="fit"
                                          paginatorAlwaysVisible="true"
+                                         currentPageReportTemplate="Total: #{poliza.lista.size()}"
                                          value="#{poliza.lista}" 
                                          emptyMessage="NO HAY REGISTROS">
+                                <p:ajax event="sort" skipChildren="false" />
 
-                                <p:column headerText="FECHA FACTURA">
-                                    <h:outputText value="#{c.fechaDoc}" style="color: #2196F3; font-weight: bolder; font-size: small"/>
+                                <p:column headerText="FECHA FACTURA" style="width: 10%">
+                                    <h:outputText value="#{item.fechaDoc}" style="color: #2196F3; font-weight: bolder; font-size: small"/>
                                 </p:column>
 
-                                <p:column headerText="FACTURA">
-                                    <h:outputText value="#{c.cveDoc}" style="color: #036FAB; font-weight: bolder; font-size: small"/>
+                                <p:column headerText="FACTURA" style="width: 10%">
+                                    <h:outputText value="#{item.cveDoc}" style="color: #036FAB; font-weight: bolder; font-size: small"/>
                                 </p:column>
 
-                                <p:column headerText="NOMBRE PROVEEDOR">
-                                    <h:outputText value="#{c.nombreProveedor}" style="color: #2196F3; font-weight: bolder; font-size: small"/>
+                                <p:column headerText="NOMBRE PROVEEDOR" style="width: 40%">
+                                    <h:outputText value="#{item.nombreProveedor}" style="color: #2196F3; font-weight: bolder; font-size: small"/>
                                 </p:column> 
 
-                                <p:column headerText="IMPORTE IEPS">
-                                    <h:outputText value="$#{c.impTot1}" style="color: #036FAB; font-weight: bolder; font-size: small">
+                                <p:column headerText="IMPORTE IEPS" style="width: 10%">
+                                    <h:outputText value="$#{item.impTot1}" style="color: #036FAB; font-weight: bolder; font-size: small">
                                         <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
                                     </h:outputText>
                                 </p:column> 
 
-                                <p:column headerText="IMPORTE IVA">
-                                    <h:outputText value="#{c.impTot4}" style="color: #2196F3; font-weight: bolder; font-size: small">
-                                        <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
-                                    </h:outputText>
-                                </p:column> 
-
-                                <p:column headerText="IMPORTE">
-                                    <h:outputText value="$#{c.importe}" style="color: #036FAB; font-weight: bolder; font-size: small">
-                                        <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
-                                    </h:outputText>
-                                </p:column> 
+                                <p:column headerText="SELECCIONAR" style="width: 10%">
+                                    <p:selectBooleanCheckbox value="#{item.seleccionar}" >
+                                        <p:ajax event="change" update="tblClientes"/>
+                                    </p:selectBooleanCheckbox>                                    
+                                </p:column>
 
                             </p:dataTable>
                         </p:tab>
                     </p:accordionPanel>
 
+                    <br></br>
+                        <div align="right">
+                             <p:commandButton value="GENERAR PÓLIZAS" 
+                                         icon="pi pi-cog" 
+                                         update="frmPrincipal:a1:tblClientes"
+                                         styleClass="etiqueta rojo"
+                                         actionListener="#{poliza.facturasSeleccionadas()}"
+                                         />
+                        </div>
 
                     <script>
                         PrimeFaces.locales['es'] = {

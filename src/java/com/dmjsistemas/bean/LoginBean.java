@@ -57,7 +57,7 @@ public class LoginBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "¡BIENVENIDO!", this.usuario.getNombre()));
             loggedIn = true;
             if (this.usuario.getPerfil().equals("Administrador")) {
-                ruta = "views/Polizas.xhtml";
+                ruta = "/polizas/views/Polizas.xhtml";
             } 
         } else {
             loggedIn = false;

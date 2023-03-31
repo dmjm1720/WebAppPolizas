@@ -44,11 +44,16 @@ public class Factf01 {
     private String tipDocAnt;
     private String docAnt;
     private String nombreProveedor;
+    private boolean seleccionar;
 
     public Factf01() {
     }
 
-    public Factf01(String tipDoc, String cveDoc, String cveClpv, String status, Date fechaDoc, Date fechaEnt, Date fechaVen, double canTot, double impTot1, double impTot4, long cveObs, long numAlma, String actCxc, String actCoi, String enlazado, String tipDocE, long numMoned, double tipcamb, long numPagos, Date fechaelab, double primerpago, String rfc, long ctlpol, String escfd, long autoriza, String serie, long folio, String autoanio, long datEnvio, String contado, long cveBita, String bloq, String formaenvio, double desFinPorc, double desTotPorc, double importe, double comTotPorc, String tipDocAnt, String docAnt, String nombreProveedor) {
+    public Factf01(String cveDoc) {
+        this.cveDoc = cveDoc;
+    }
+
+    public Factf01(String tipDoc, String cveDoc, String cveClpv, String status, Date fechaDoc, Date fechaEnt, Date fechaVen, double canTot, double impTot1, double impTot4, long cveObs, long numAlma, String actCxc, String actCoi, String enlazado, String tipDocE, long numMoned, double tipcamb, long numPagos, Date fechaelab, double primerpago, String rfc, long ctlpol, String escfd, long autoriza, String serie, long folio, String autoanio, long datEnvio, String contado, long cveBita, String bloq, String formaenvio, double desFinPorc, double desTotPorc, double importe, double comTotPorc, String tipDocAnt, String docAnt, String nombreProveedor, boolean seleccionar) {
         this.tipDoc = tipDoc;
         this.cveDoc = cveDoc;
         this.cveClpv = cveClpv;
@@ -89,6 +94,7 @@ public class Factf01 {
         this.tipDocAnt = tipDocAnt;
         this.docAnt = docAnt;
         this.nombreProveedor = nombreProveedor;
+        this.seleccionar = seleccionar;
     }
 
     public String getTipDoc() {
@@ -409,6 +415,14 @@ public class Factf01 {
 
     public void setNombreProveedor(String nombreProveedor) {
         this.nombreProveedor = nombreProveedor;
+    }
+
+    public boolean getSeleccionar() {
+        return seleccionar;
+    }
+
+    public void setSeleccionar(boolean seleccionar) {
+        this.seleccionar = seleccionar;
     }
 
 }

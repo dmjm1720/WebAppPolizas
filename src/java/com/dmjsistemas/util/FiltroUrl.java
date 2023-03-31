@@ -14,16 +14,20 @@ public class FiltroUrl implements PhaseListener {
     @Override
     public void afterPhase(PhaseEvent event) {
         FacesContext facesContext = event.getFacesContext();
-        String currrentPage = facesContext.getViewRoot().getViewId();
-        boolean isPageLogin = currrentPage.lastIndexOf("/index.xhtml") > -1 ? true : false;
+        String paginaActual = facesContext.getViewRoot().getViewId();
+
+        if ("/index.xhtml".equals(paginaActual)) {
+            return;
+        }
+
+        boolean isPageLogin = paginaActual.lastIndexOf("/index.xhtml") > -1 ? true : true;
         HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
         Object nombre = session.getAttribute("nombre");
         if (!isPageLogin && nombre == null) {
             NavigationHandler nHandler = facesContext.getApplication().getNavigationHandler();
             nHandler.handleNavigation(facesContext, null, "/index.xhtml");
 
-        } else {
-        }
+        } 
     }
 
     @Override
