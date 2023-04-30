@@ -3,11 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/dmjm/Documentos/GitHub/WebAppPolizas/src/java/com/dmjsistemas/util/FiltroUrl.java</file>
-            <file>file:/home/dmjm/Documentos/GitHub/WebAppPolizas/src/java/com/dmjsistemas/util/Conexion.java</file>
-            <file>file:/home/dmjm/Documentos/GitHub/WebAppPolizas/src/java/com/dmjsistemas/util/Configuracion.java</file>
-            <file>file:/home/dmjm/Documentos/GitHub/WebAppPolizas/src/java/hibernate.cfg.xml</file>
-            <file>file:/home/dmjm/Documentos/GitHub/WebAppPolizas/web/WEB-INF/faces-config.xml</file>
+            <file>file:/C:/Users/Maribel/Documents/GitHub/WebAppPolizas/src/java/com/dmjsistemas/util/Configuracion.java</file>
+            <file>file:/C:/Users/Maribel/Documents/GitHub/WebAppPolizas/src/java/com/dmjsistemas/bean/PolizaBean.java</file>
+            <file>file:/C:/Users/Maribel/Documents/GitHub/WebAppPolizas/web/views/Polizas.xhtml</file>
+            <file>file:/C:/Users/Maribel/Documents/GitHub/WebAppPolizas/src/java/hibernate.cfg.xml</file>
+            <file>file:/C:/Users/Maribel/Documents/GitHub/WebAppPolizas/src/java/com/dmjsistemas/model/Usuario.java</file>
+            <file>file:/C:/Users/Maribel/Documents/GitHub/WebAppPolizas/src/java/com/dmjsistemas/model/Factf01.java</file>
         </group>
     </open-files>
 </project-private>

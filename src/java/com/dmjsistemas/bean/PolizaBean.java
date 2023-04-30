@@ -3,7 +3,6 @@ package com.dmjsistemas.bean;
 import com.dmjsistemas.model.Factf01;
 import com.dmjsistemas.util.Conexion;
 import java.io.Serializable;
-import static java.lang.Boolean.TRUE;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,6 +34,7 @@ public class PolizaBean extends Conexion implements Serializable {
     private String filtroCliente;
     private List<String> listaCliente;
     List<String> listarTodo;
+    private Double totalesIEPS;
 
     public PolizaBean() {
     }
@@ -111,6 +111,14 @@ public class PolizaBean extends Conexion implements Serializable {
         this.listarTodo = listarTodo;
     }
 
+    public Double getTotalesIEPS() {
+        return totalesIEPS;
+    }
+
+    public void setTotalesIEPS(Double totalesIEPS) {
+        this.totalesIEPS = totalesIEPS;
+    }
+
     @PostConstruct
     public void init() {
         f = new Factf01();
@@ -130,16 +138,17 @@ public class PolizaBean extends Conexion implements Serializable {
         try {
             ConectarSae();
             Statement stFactf1 = getCnSae().createStatement();
+            totalesIEPS=0.0;
             String sqlFactf1 = "SELECT "
                     + "F.TIP_DOC, F.CVE_DOC, F.CVE_CLPV, F.STATUS, F.FECHA_DOC, F.FECHA_VEN, F.CAN_TOT, F.IMP_TOT1, F.IMP_TOT4, F.CVE_OBS, F.NUM_ALMA, F.ACT_CXC, F.ACT_COI, F.ENLAZADO, "
                     + "F.TIP_DOC_E, F.NUM_MONED, F.TIPCAMB, F.NUM_PAGOS, F.PRIMERPAGO, F.RFC, F.CTLPOL, F.ESCFD, F.AUTORIZA, F.SERIE, F.FOLIO, F.DAT_ENVIO, F.CONTADO, F.CVE_BITA, F.BLOQ, F.FORMAENVIO, "
-                    + "F.DES_FIN_PORC, F.DES_TOT_PORC, F.IMPORTE, F.COM_TOT_PORC, F.TIP_DOC_ANT, F.DOC_ANT, SF.SELECCIONAR, C.NOMBRE "
+                    + "F.DES_FIN_PORC, F.DES_TOT_PORC, F.IMPORTE, F.COM_TOT_PORC, F.TIP_DOC_ANT, F.DOC_ANT, C.NOMBRE, CT.DOCTO, CT.FECHA_APLI "
                     + "FROM FACTF01 F "
                     + "INNER JOIN "
-                    + "SEGUIMIENTO_FACTURAS SF ON F.CVE_DOC = SF.CVE_DOC "
+                    + "CUEN_DET01 CT ON F.CVE_DOC = CT.NO_FACTURA "
                     + "INNER JOIN "
                     + "CLIE01 C ON F.CVE_CLPV = C.CLAVE "
-                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND SF.PROCESADO=0 AND F.FECHA_DOC BETWEEN '" + f1 + "' AND '" + f2 + "' AND C.NOMBRE='" + filtroCliente + "'";
+                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND CT.FECHA_APLI BETWEEN '" + f1 + "' AND '" + f2 + "'";
             ResultSet rsFactf1 = stFactf1.executeQuery(sqlFactf1);
             if (!rsFactf1.isBeforeFirst()) {
             } else {
@@ -153,6 +162,7 @@ public class PolizaBean extends Conexion implements Serializable {
                     f.setFechaVen(rsFactf1.getDate("FECHA_VEN"));
                     f.setCanTot(rsFactf1.getDouble("CAN_TOT"));
                     f.setImpTot1(rsFactf1.getDouble("IMP_TOT1"));
+                    totalesIEPS = totalesIEPS + rsFactf1.getDouble("IMP_TOT1");
                     f.setImpTot4(rsFactf1.getDouble("IMP_TOT4"));
                     f.setCveObs(rsFactf1.getLong("CVE_OBS"));
                     f.setNumAlma(rsFactf1.getLong("NUM_ALMA"));
@@ -182,10 +192,13 @@ public class PolizaBean extends Conexion implements Serializable {
                     f.setTipDoc(rsFactf1.getString("TIP_DOC_ANT"));
                     f.setDocAnt(rsFactf1.getString("DOC_ANT"));
                     f.setNombreProveedor(rsFactf1.getString("NOMBRE"));
-                    f.setSeleccionar(rsFactf1.getBoolean("SELECCIONAR"));
+                    //f.setSeleccionar(rsFactf1.getBoolean("SELECCIONAR"));
+                    f.setNoPoliza(rsFactf1.getString("DOCTO"));
+                    f.setFechaPago(rsFactf1.getDate("FECHA_APLI"));
                     lista.add(f);
                 }
             }
+            System.out.println("Totales IEPS: " + totalesIEPS);
             getLista();
             CerrarSae();
         } catch (SQLException e) {
@@ -194,13 +207,8 @@ public class PolizaBean extends Conexion implements Serializable {
     }
 
     public void facturasSeleccionadas() {
-        for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).getSeleccionar() == TRUE) {
-                generarPoliza(lista.get(i).getCveDoc());
-                actualizarEstado(lista.get(i).getCveDoc());
-                System.out.println("Facturas seleccionadas: " + lista.get(i).getCveDoc());
-            }
-        }
+        generarPoliza();
+
         String info = "Se han enviado las facturas seleccionadas a la poliza";
         PrimeFaces.current().executeScript("Swal.fire({\n"
                 + "  position: 'top-center',\n"
@@ -212,19 +220,23 @@ public class PolizaBean extends Conexion implements Serializable {
                 + "})");
     }
 
-    public void generarPoliza(String doc) {
+    public void generarPoliza() {
         try {
             ConectarSae();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String f1 = dateFormat.format(fec1);
+            String f2 = dateFormat.format(fec2);
             Statement stFactf1 = getCnSae().createStatement();
             String sqlFactf1 = "SELECT "
                     + "F.TIP_DOC, F.CVE_DOC, F.CVE_CLPV, F.STATUS, F.FECHA_DOC, F.FECHA_VEN, F.CAN_TOT, F.IMP_TOT1, F.IMP_TOT4, F.CVE_OBS, F.NUM_ALMA, F.ACT_CXC, F.ACT_COI, F.ENLAZADO, "
                     + "F.TIP_DOC_E, F.NUM_MONED, F.TIPCAMB, F.NUM_PAGOS, F.PRIMERPAGO, F.RFC, F.CTLPOL, F.ESCFD, F.AUTORIZA, F.SERIE, F.FOLIO, F.DAT_ENVIO, F.CONTADO, F.CVE_BITA, F.BLOQ, F.FORMAENVIO, "
-                    + "F.DES_FIN_PORC, F.DES_TOT_PORC, F.IMPORTE, F.COM_TOT_PORC, F.TIP_DOC_ANT, F.DOC_ANT, SF.SELECCIONAR, C.NOMBRE "
+                    + "F.DES_FIN_PORC, F.DES_TOT_PORC, F.IMPORTE, F.COM_TOT_PORC, F.TIP_DOC_ANT, F.DOC_ANT, C.NOMBRE, CT.DOCTO, CT.FECHA_APLI  "
                     + "FROM FACTF01 F "
                     + "INNER JOIN "
-                    + "SEGUIMIENTO_FACTURAS SF ON F.CVE_DOC = SF.CVE_DOC "
-                    + "INNER JOIN CLIE01 C ON F.CVE_CLPV = C.CLAVE "
-                    + "WHERE F.CVE_DOC='" + doc + "'";
+                    + "CUEN_DET01 CT ON F.CVE_DOC = CT.NO_FACTURA "
+                    + "INNER JOIN "
+                    + "CLIE01 C ON F.CVE_CLPV = C.CLAVE "
+                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND CT.FECHA_APLI BETWEEN '" + f1 + "' AND '" + f2 + "'";
             ResultSet rsFactf1 = stFactf1.executeQuery(sqlFactf1);
             if (!rsFactf1.isBeforeFirst()) {
             } else {
@@ -267,14 +279,17 @@ public class PolizaBean extends Conexion implements Serializable {
                     f.setTipDoc(rsFactf1.getString("TIP_DOC_ANT"));
                     f.setDocAnt(rsFactf1.getString("DOC_ANT"));
                     f.setNombreProveedor(rsFactf1.getString("NOMBRE"));
+                    f.setNoPoliza(rsFactf1.getString("DOCTO").trim());
+                    f.setFechaPago(rsFactf1.getDate("FECHA_APLI"));
                     String fecDoc[] = null;
-                    fecDoc = f.getFechaDoc().toString().split("-");
+                    fecDoc = f.getFechaPago().toString().split("-");
                     String ejercicio = fecDoc[0];
                     String ejercicioAnio = fecDoc[0].substring(2);
                     String mesPeriodo = fecDoc[1];
 
                     //**FOLIO MÁXIMO PÓLIZA**//
-                    String folioConsecutivo = maxPoliza(ejercicioAnio, mesPeriodo, ejercicio);
+                    // String folioConsecutivo = maxPoliza(ejercicioAnio, mesPeriodo, ejercicio);
+                    String folioConsecutivo = f.getNoPoliza();
                     switch (folioConsecutivo.length()) {
                         case 1:
                             folioConsecutivo = "    " + folioConsecutivo;
@@ -286,7 +301,10 @@ public class PolizaBean extends Conexion implements Serializable {
                             folioConsecutivo = "  " + folioConsecutivo;
                             break;
                         case 4:
-                            folioConsecutivo = "  " + folioConsecutivo;
+                            folioConsecutivo = " " + folioConsecutivo;
+                            break;
+                        case 5:
+                            folioConsecutivo = "" + folioConsecutivo;
                             break;
                         default:
                             folioConsecutivo = "" + folioConsecutivo;
@@ -295,41 +313,16 @@ public class PolizaBean extends Conexion implements Serializable {
                     //**ACTUALIZAR EL FOLIO DE ACUERDO AL NÚMERO DE PÓLIZA GENERADA**//
                     //actualizarFolio(mesPeriodo, ejercicio, folioConsecutivo);
                     String nomProv = nombreProveedor(f.getCveClpv());
-                   
+
                     insertarAuxiliaresClienteSubcuenta(f.getCveDoc(), mesPeriodo, ejercicio, folioConsecutivo, f.getFechaDoc().toString(), nomProv, f.getTipcamb(), f.getImporte(), f.getImpTot1(), f.getImpTot4(), ejercicioAnio);
                     //int totalPartidas = buscarTotalPartidas(ejercicioAnio, mesPeriodo, folioConsecutivo);
- 
-                    
+
                 }
             }
             CerrarSae();
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
-    }
-
-    //**OBTENER EL FOLIO MÁXIMO DE LA POLIZA SIGUIENTE**//
-    public String maxPoliza(String anio, String periodo, String ejercicio) {
-        String max = "";
-//        try {
-//            ConectarCoi();
-//            String poliza = "POLIZAS" + anio;
-//            Statement st = getCnCoi().createStatement();
-//            String sql = "SELECT MAX(NUM_POLIZ) +1 AS MAX FROM " + poliza + " WHERE PERIODO ='" + periodo + "' AND EJERCICIO='" + ejercicio + "' AND TIPO_POLI='Ig'";
-//            ResultSet rs = st.executeQuery(sql);
-//            if (!rs.isBeforeFirst()) {
-//
-//            } else {
-//                while (rs.next()) {
-//                    max = rs.getString("MAX");
-//                }
-//            }
-//            CerrarCoi();
-//        } catch (SQLException e) {
-//            System.err.println(e.getMessage());
-//        }
-       return max;
-    
     }
 
     //**ACTUALIZAR EL FOLIO EN LA TABAL DE FOLIOS**//
@@ -346,29 +339,28 @@ public class PolizaBean extends Conexion implements Serializable {
         }
     }
 
-
-
     //**INSERTAR SUBCUENTA**//
     public void insertarAuxiliaresClienteSubcuenta(String cveDoc, String mesPeriodo, String ejercicioAnio, String numPoliz, String fechaDoc, String nombreProveedor, Double tipoCambio, Double importe, Double imp1, Double imp4, String ej) {
         String auxliar = "AUXILIAR" + ejercicioAnio.substring(2);
-        String numpol = folioPoliza(cveDoc, auxliar);
+        //String numpol = folioPoliza(cveDoc, auxliar);
+        String numpol = numPoliz;
         try {
             ConectarCoi();
             //**210200100000000000002 I.E.P.S. PAGADO HABER**//
-             int sumaPartidas = buscarTotalPartidasAuxiliar(ejercicioAnio, mesPeriodo, numpol, auxliar);
+            int sumaPartidas = buscarTotalPartidasAuxiliar(ejercicioAnio, mesPeriodo, numpol, auxliar);
             String sql3 = "INSERT INTO " + auxliar + " (TIPO_POLI, NUM_POLIZ, NUM_PART, PERIODO, EJERCICIO, NUM_CTA, FECHA_POL, CONCEP_PO, DEBE_HABER, MONTOMOV, NUMDEPTO,TIPCAMBIO,CONTRAPAR,ORDEN, CCOSTOS, CGRUPOS) "
-                    + "VALUES ('Ig','" + numpol + "',"+ sumaPartidas +",'" + mesPeriodo + "','" + ejercicioAnio + "','210200100000000000002','" + fechaDoc + "','TRA-" + numpol.trim() + " ABONO DE CLIENTES F-" + cveDoc + " / " + nombreProveedor + "','H','" + imp1 + "','0','" + tipoCambio + "','0','3','0','0');";
+                    + "VALUES ('Ig','" + numpol + "'," + sumaPartidas + ",'" + mesPeriodo + "','" + ejercicioAnio + "','210200100000000000002','" + fechaDoc + "','TRA-" + numpol.trim() + " ABONO DE CLIENTES F-" + cveDoc + " / " + nombreProveedor + "','H','" + imp1 + "','0','" + tipoCambio + "','0','3','0','0');";
             PreparedStatement ps3 = getCnCoi().prepareStatement(sql3);
             ps3.executeUpdate();
             //**210100100000000000002 I.E.P.S. PENDIENTE DE PAGO DEBE**//
-             int sumaPartidas2 = buscarTotalPartidasAuxiliar(ejercicioAnio, mesPeriodo, numpol,auxliar);
+            int sumaPartidas2 = buscarTotalPartidasAuxiliar(ejercicioAnio, mesPeriodo, numpol, auxliar);
             String sql4 = "INSERT INTO " + auxliar + " (TIPO_POLI, NUM_POLIZ, NUM_PART, PERIODO, EJERCICIO, NUM_CTA, FECHA_POL, CONCEP_PO, DEBE_HABER, MONTOMOV, NUMDEPTO,TIPCAMBIO,CONTRAPAR,ORDEN, CCOSTOS, CGRUPOS) "
-                    + "VALUES ('Ig','" + numpol + "',"+ sumaPartidas2 +",'" + mesPeriodo + "','" + ejercicioAnio + "','210100100000000000002','" + fechaDoc + "','TRA-" + numpol.trim() + " ABONO DE CLIENTES F-" + cveDoc + " / " + nombreProveedor + "','D','" + imp1 + "','0','" + tipoCambio + "','0','4','0','0');";
+                    + "VALUES ('Ig','" + numpol + "'," + sumaPartidas2 + ",'" + mesPeriodo + "','" + ejercicioAnio + "','210100100000000000002','" + fechaDoc + "','TRA-" + numpol.trim() + " ABONO DE CLIENTES F-" + cveDoc + " / " + nombreProveedor + "','D','" + imp1 + "','0','" + tipoCambio + "','0','4','0','0');";
             PreparedStatement ps4 = getCnCoi().prepareStatement(sql4);
             ps4.executeUpdate();
-
+            actualizarEstado(cveDoc);
             actualizarEncabezadoPoliza(ejercicioAnio, mesPeriodo, numpol, f.getFechaDoc().toString(), f.getCveDoc(), nombreProveedor, sumaPartidas2);
-            
+
             CerrarCoi();
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -379,7 +371,7 @@ public class PolizaBean extends Conexion implements Serializable {
         String folio = "";
         try {
             ConectarCoi();
-            String sql = "SELECT TOP(1) NUM_POLIZ FROM "+ aux +" WHERE TIPO_POLI='Ig' AND CONCEP_PO LIKE '%" + factura + "%'";
+            String sql = "SELECT TOP(1) NUM_POLIZ FROM " + aux + " WHERE TIPO_POLI='Ig' AND CONCEP_PO LIKE '%" + factura + "%'";
             Statement st = getCnCoi().createStatement();
             ResultSet rs = st.executeQuery(sql);
             if (!rs.isBeforeFirst()) {
@@ -436,6 +428,7 @@ public class PolizaBean extends Conexion implements Serializable {
         }
         return total;
     }
+
     public int buscarTotalPartidasAuxiliar(String ejercicioAnio, String mesPeriodo, String numPoliz, String au) {
         int total = 0;
         try {
@@ -460,7 +453,7 @@ public class PolizaBean extends Conexion implements Serializable {
         String poliza = "POLIZAS" + ejercicioAnio.substring(2);
         try {
             ConectarCoi();
-            String sql = "UPDATE " + poliza + " SET NUM_PART="+ totPartida +" WHERE NUM_POLIZ='" + numPoliz + "' AND PERIODO='" + mesPeriodo + "' AND EJERCICIO='" + ejercicioAnio + "' AND TIPO_POLI='Ig'";
+            String sql = "UPDATE " + poliza + " SET NUM_PART=" + totPartida + " WHERE NUM_POLIZ='" + numPoliz + "' AND PERIODO='" + mesPeriodo + "' AND EJERCICIO='" + ejercicioAnio + "' AND TIPO_POLI='Ig'";
             PreparedStatement ps = getCnCoi().prepareStatement(sql);
             ps.executeUpdate();
             CerrarCoi();
@@ -468,10 +461,11 @@ public class PolizaBean extends Conexion implements Serializable {
             System.err.println(e.getMessage());
         }
     }
+
     public void actualizarEstado(String docu) {
         try {
             ConectarSae();
-            String sql = "UPDATE SEGUIMIENTO_FACTURAS SET PROCESADO=1 WHERE CVE_DOC='"+ docu +"'";
+            String sql = "UPDATE SEGUIMIENTO_FACTURAS SET PROCESADO=1 WHERE CVE_DOC='" + docu + "'";
             PreparedStatement ps = getCnSae().prepareStatement(sql);
             ps.executeUpdate();
             CerrarSae();

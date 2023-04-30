@@ -19,10 +19,11 @@
                 <h:form id="frmPrincipal">
                     <p:blockUI widgetVar="loading" trigger="btnBuscar" block="frmPrincipal:a1:tblClientes">
                         <h:panelGrid styleClass="custom-painelgrid-center">
-                            <h:outputText value="Espere..." />
+                            <h:outputText value="Buscando..." />
                             <p:graphicImage value="../resources/img/cargando.gif" />
                         </h:panelGrid>
                     </p:blockUI>
+
                     <p:growl id="msgs" showDetail="true"
                              skipDetailIfEqualsSummary="true" />
 
@@ -39,21 +40,26 @@
                         <p:datePicker id="f2" value="#{poliza.fec2}"
                                       pattern="yyyy-MM-dd" showIcon="true">
                         </p:datePicker>
-                        <p:badge value="SELECCIONA CLIENTE" styleClass="pear" />
-                        <p:autoComplete id="byFactura" size="40" placeholder="INGRESA NOMBRE DE CLIENTE" 
-                                        dropdown="true" value="#{poliza.filtroCliente}" 
-                                        completeMethod="#{poliza.completeCliente}"/>    
+                        <!--                        <p:badge value="SELECCIONA CLIENTE" styleClass="pear" />
+                                                <p:autoComplete id="byFactura" size="40" placeholder="INGRESA NOMBRE DE CLIENTE" 
+                                                                dropdown="true" value="{poliza.filtroCliente}" 
+                                                                completeMethod="{poliza.completeCliente}"/>    -->
 
                         <p:commandButton id="btnBuscar" value="BUSCAR FACTURAS" 
                                          icon="pi pi-search" 
                                          styleClass="etiqueta"
-                                         update="frmPrincipal:a1:tblClientes"
+                                         update="frmPrincipal:a1:tblClientes, frmPrincipal:totalIEPS"
                                          actionListener="#{poliza.listarFacturasPendientes()}"
                                          />
                     </p:panelGrid>
                     <p:divider/>
                     <div style="text-align: center">
                         <p:badge id="polpend"  value="LISTA DE FACTURAS PENDIENTES PARA GENERACIÓN DE PÓLIZAS EN COI" styleClass="etiqueta" />
+                    </div>
+                    <br></br>
+                    <p:divider></p:divider>
+                    <div style="text-align: center">
+                        <p:badge id="totalIEPS"  value="TOTAL DE IEPS: $#{poliza.totalesIEPS}" styleClass="rojo etiqueta" style="font-size: 20px !important" />
                     </div>
                     <p:divider/>
                     <p:accordionPanel id="a1">
@@ -77,8 +83,8 @@
                                          emptyMessage="NO HAY REGISTROS">
                                 <p:ajax event="sort" skipChildren="false" />
 
-                                <p:column headerText="FECHA FACTURA" style="width: 10%">
-                                    <h:outputText value="#{item.fechaDoc}" style="color: #2196F3; font-weight: bolder; font-size: small"/>
+                                <p:column headerText="FECHA PAGO" style="width: 10%">
+                                    <h:outputText value="#{item.fechaPago}" style="color: #2196F3; font-weight: bolder; font-size: small"/>
                                 </p:column>
 
                                 <p:column headerText="FACTURA" style="width: 10%">
@@ -94,26 +100,25 @@
                                         <f:convertNumber pattern="¤#,##0.00" currencySymbol="$" />
                                     </h:outputText>
                                 </p:column> 
-
-                                <p:column headerText="SELECCIONAR" style="width: 10%">
-                                    <p:selectBooleanCheckbox value="#{item.seleccionar}" >
-                                        <p:ajax event="change" update="tblClientes"/>
-                                    </p:selectBooleanCheckbox>                                    
-                                </p:column>
-
                             </p:dataTable>
                         </p:tab>
                     </p:accordionPanel>
 
                     <br></br>
-                        <div align="right">
-                             <p:commandButton value="GENERAR PÓLIZAS" 
+                    <p:blockUI widgetVar="loading2" trigger="btnGenerar" block="frmPrincipal">
+                        <h:panelGrid styleClass="custom-painelgrid-center">
+                            <h:outputText value="Procesando..." />
+                            <p:graphicImage value="../resources/img/cargando2.gif" />
+                        </h:panelGrid>
+                    </p:blockUI>
+                    <div align="right">
+                        <p:commandButton id="btnGenerar" value="GENERAR PÓLIZAS" 
                                          icon="pi pi-cog" 
                                          update="frmPrincipal:a1:tblClientes"
                                          styleClass="etiqueta rojo"
                                          actionListener="#{poliza.facturasSeleccionadas()}"
                                          />
-                        </div>
+                    </div>
 
                     <script>
                         PrimeFaces.locales['es'] = {

@@ -45,6 +45,8 @@ public class Factf01 {
     private String docAnt;
     private String nombreProveedor;
     private boolean seleccionar;
+    private String noPoliza;
+    private Date fechaPago;
 
     public Factf01() {
     }
@@ -53,7 +55,7 @@ public class Factf01 {
         this.cveDoc = cveDoc;
     }
 
-    public Factf01(String tipDoc, String cveDoc, String cveClpv, String status, Date fechaDoc, Date fechaEnt, Date fechaVen, double canTot, double impTot1, double impTot4, long cveObs, long numAlma, String actCxc, String actCoi, String enlazado, String tipDocE, long numMoned, double tipcamb, long numPagos, Date fechaelab, double primerpago, String rfc, long ctlpol, String escfd, long autoriza, String serie, long folio, String autoanio, long datEnvio, String contado, long cveBita, String bloq, String formaenvio, double desFinPorc, double desTotPorc, double importe, double comTotPorc, String tipDocAnt, String docAnt, String nombreProveedor, boolean seleccionar) {
+    public Factf01(String tipDoc, String cveDoc, String cveClpv, String status, Date fechaDoc, Date fechaEnt, Date fechaVen, double canTot, double impTot1, double impTot4, long cveObs, long numAlma, String actCxc, String actCoi, String enlazado, String tipDocE, long numMoned, double tipcamb, long numPagos, Date fechaelab, double primerpago, String rfc, long ctlpol, String escfd, long autoriza, String serie, long folio, String autoanio, long datEnvio, String contado, long cveBita, String bloq, String formaenvio, double desFinPorc, double desTotPorc, double importe, double comTotPorc, String tipDocAnt, String docAnt, String nombreProveedor, boolean seleccionar, String noPoliza, Date fechaPago) {
         this.tipDoc = tipDoc;
         this.cveDoc = cveDoc;
         this.cveClpv = cveClpv;
@@ -95,6 +97,8 @@ public class Factf01 {
         this.docAnt = docAnt;
         this.nombreProveedor = nombreProveedor;
         this.seleccionar = seleccionar;
+        this.noPoliza = noPoliza;
+        this.fechaPago = fechaPago;
     }
 
     public String getTipDoc() {
@@ -423,6 +427,22 @@ public class Factf01 {
 
     public void setSeleccionar(boolean seleccionar) {
         this.seleccionar = seleccionar;
+    }
+
+    public String getNoPoliza() {
+        return noPoliza;
+    }
+
+    public void setNoPoliza(String noPoliza) {
+        this.noPoliza = noPoliza;
+    }
+
+    public Date getFechaPago() {
+        return fechaPago;
+    }
+
+    public void setFechaPago(Date fechaPago) {
+        this.fechaPago = fechaPago;
     }
 
 }
