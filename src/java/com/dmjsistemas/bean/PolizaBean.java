@@ -148,7 +148,7 @@ public class PolizaBean extends Conexion implements Serializable {
                     + "CUEN_DET01 CT ON F.CVE_DOC = CT.NO_FACTURA "
                     + "INNER JOIN "
                     + "CLIE01 C ON F.CVE_CLPV = C.CLAVE "
-                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND CT.FECHA_APLI BETWEEN '" + f1 + "' AND '" + f2 + "'";
+                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND F.TIP_DOC_E='R' AND CT.CTLPOL=0 AND CT.FECHA_APLI BETWEEN '" + f1 + "' AND '" + f2 + "'";
             ResultSet rsFactf1 = stFactf1.executeQuery(sqlFactf1);
             if (!rsFactf1.isBeforeFirst()) {
             } else {
@@ -236,7 +236,7 @@ public class PolizaBean extends Conexion implements Serializable {
                     + "CUEN_DET01 CT ON F.CVE_DOC = CT.NO_FACTURA "
                     + "INNER JOIN "
                     + "CLIE01 C ON F.CVE_CLPV = C.CLAVE "
-                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND CT.FECHA_APLI BETWEEN '" + f1 + "' AND '" + f2 + "'";
+                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND F.TIP_DOC_E='R' AND CT.CTLPOL=0 AND CT.FECHA_APLI BETWEEN '" + f1 + "' AND '" + f2 + "'";
             ResultSet rsFactf1 = stFactf1.executeQuery(sqlFactf1);
             if (!rsFactf1.isBeforeFirst()) {
             } else {
@@ -465,7 +465,8 @@ public class PolizaBean extends Conexion implements Serializable {
     public void actualizarEstado(String docu) {
         try {
             ConectarSae();
-            String sql = "UPDATE SEGUIMIENTO_FACTURAS SET PROCESADO=1 WHERE CVE_DOC='" + docu + "'";
+            //String sql = "UPDATE SEGUIMIENTO_FACTURAS SET PROCESADO=1 WHERE CVE_DOC='" + docu + "'";
+            String sql = "UPDATE CUEN_DET01 SET CTLPOL=1 WHERE NO_FACTURA='" + docu + "'";
             PreparedStatement ps = getCnSae().prepareStatement(sql);
             ps.executeUpdate();
             CerrarSae();
