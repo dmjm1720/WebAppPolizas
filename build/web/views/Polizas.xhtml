@@ -51,6 +51,10 @@
                                          update="frmPrincipal:a1:tblClientes, frmPrincipal:totalIEPS"
                                          actionListener="#{poliza.listarFacturasPendientes()}"
                                          />
+                       
+                        <p:commandButton value="Exportar en Excel" icon="pi pi-file-excel" styleClass="mr-2 mb-2 pear">
+                    <p:dataExporter type="xls" target="frmPrincipal:a1:tblClientes"  fileName="IEPS"/>
+                </p:commandButton>
                     </p:panelGrid>
                     <p:divider/>
                     <div style="text-align: center">
@@ -60,6 +64,7 @@
                     <p:divider></p:divider>
                     <div style="text-align: center">
                         <p:badge id="totalIEPS"  value="TOTAL DE IEPS: $#{poliza.totalesIEPS}" styleClass="rojo etiqueta" style="font-size: 20px !important" />
+
                     </div>
                     <p:divider/>
                     <p:accordionPanel id="a1">
@@ -108,14 +113,14 @@
                     <p:blockUI widgetVar="loading2" trigger="btnGenerar" block="frmPrincipal">
                         <h:panelGrid styleClass="custom-painelgrid-center">
                             <h:outputText value="Procesando..." />
-                            <p:graphicImage value="../resources/img/cargando2.gif" />
+                            <p:graphicImage value="../resources/img/ajax-loader.gif" />
                         </h:panelGrid>
                     </p:blockUI>
                     <div align="right">
                         <p:commandButton id="btnGenerar" value="GENERAR PÓLIZAS" 
                                          icon="pi pi-cog" 
                                          update="frmPrincipal:a1:tblClientes"
-                                         styleClass="etiqueta rojo"
+                                         styleClass="etiqueta pear"
                                          actionListener="#{poliza.facturasSeleccionadas()}"
                                          />
                     </div>

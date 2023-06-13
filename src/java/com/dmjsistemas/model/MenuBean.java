@@ -39,6 +39,13 @@ public class MenuBean implements Serializable {
                     .outcome("/views/Polizas")
                     .build();
             firstSubmenu.getElements().add(item);
+            DefaultMenuItem item2 = DefaultMenuItem
+                    .builder()
+                    .value("Reporte")
+                    .icon("pi pi-cog")
+                    .outcome("/views/Reporte")
+                    .build();
+            firstSubmenu.getElements().add(item2);
 
             model.getElements().add(firstSubmenu);
         } 

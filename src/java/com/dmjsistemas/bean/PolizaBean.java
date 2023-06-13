@@ -148,7 +148,7 @@ public class PolizaBean extends Conexion implements Serializable {
                     + "CUEN_DET01 CT ON F.CVE_DOC = CT.NO_FACTURA "
                     + "INNER JOIN "
                     + "CLIE01 C ON F.CVE_CLPV = C.CLAVE "
-                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND F.TIP_DOC_E='R' AND CT.CTLPOL=0 AND CT.FECHA_APLI BETWEEN '" + f1 + "' AND '" + f2 + "'";
+                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND F.TIP_DOC_E IN ('R','O') AND CT.CTLPOL=0 AND CT.FECHA_APLI BETWEEN '" + f1 + "' AND '" + f2 + "'";
             ResultSet rsFactf1 = stFactf1.executeQuery(sqlFactf1);
             if (!rsFactf1.isBeforeFirst()) {
             } else {
@@ -236,7 +236,7 @@ public class PolizaBean extends Conexion implements Serializable {
                     + "CUEN_DET01 CT ON F.CVE_DOC = CT.NO_FACTURA "
                     + "INNER JOIN "
                     + "CLIE01 C ON F.CVE_CLPV = C.CLAVE "
-                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND F.TIP_DOC_E='R' AND CT.CTLPOL=0 AND CT.FECHA_APLI BETWEEN '" + f1 + "' AND '" + f2 + "'";
+                    + "WHERE F.STATUS <> 'C' AND F.IMP_TOT1>0 AND F.TIP_DOC_E IN ('R','O') AND CT.CTLPOL=0 AND CT.FECHA_APLI BETWEEN '" + f1 + "' AND '" + f2 + "'";
             ResultSet rsFactf1 = stFactf1.executeQuery(sqlFactf1);
             if (!rsFactf1.isBeforeFirst()) {
             } else {
@@ -314,7 +314,7 @@ public class PolizaBean extends Conexion implements Serializable {
                     //actualizarFolio(mesPeriodo, ejercicio, folioConsecutivo);
                     String nomProv = nombreProveedor(f.getCveClpv());
 
-                    insertarAuxiliaresClienteSubcuenta(f.getCveDoc(), mesPeriodo, ejercicio, folioConsecutivo, f.getFechaDoc().toString(), nomProv, f.getTipcamb(), f.getImporte(), f.getImpTot1(), f.getImpTot4(), ejercicioAnio);
+                    insertarAuxiliaresClienteSubcuenta(f.getCveDoc(), mesPeriodo, ejercicio, folioConsecutivo, f.getFechaPago().toString(), nomProv, f.getTipcamb(), f.getImporte(), f.getImpTot1(), f.getImpTot4(), ejercicioAnio);
                     //int totalPartidas = buscarTotalPartidas(ejercicioAnio, mesPeriodo, folioConsecutivo);
 
                 }
@@ -360,7 +360,7 @@ public class PolizaBean extends Conexion implements Serializable {
             ps4.executeUpdate();
             actualizarEstado(cveDoc);
             actualizarEncabezadoPoliza(ejercicioAnio, mesPeriodo, numpol, f.getFechaDoc().toString(), f.getCveDoc(), nombreProveedor, sumaPartidas2);
-
+            listarFacturasPendientes();
             CerrarCoi();
         } catch (SQLException e) {
             System.err.println(e.getMessage());

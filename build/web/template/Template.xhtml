@@ -25,7 +25,13 @@
                 <h:form>
                     <p:sidebar widgetVar="sidebar1" baseZIndex="10000">
                         <div class="card">
-        
+                            <p:menu  style="width: 100%">
+                                <p:submenu label="MENÚ">
+                                    <p:menuitem value="Reporte" outcome="/views/Reporte" icon="pi pi-cog"/>
+                                    <p:menuitem value="Polizas" outcome="/views/Polizas" icon="pi pi-cog"/>
+                                </p:submenu>
+
+                            </p:menu>
                             <br></br>
                             <p:commandButton styleClass="cerrar" 
                                              style="width: 100%"  
