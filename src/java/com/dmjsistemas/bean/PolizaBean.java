@@ -138,7 +138,7 @@ public class PolizaBean extends Conexion implements Serializable {
         try {
             ConectarSae();
             Statement stFactf1 = getCnSae().createStatement();
-            totalesIEPS=0.0;
+            totalesIEPS = 0.0;
             String sqlFactf1 = "SELECT "
                     + "F.TIP_DOC, F.CVE_DOC, F.CVE_CLPV, F.STATUS, F.FECHA_DOC, F.FECHA_VEN, F.CAN_TOT, F.IMP_TOT1, F.IMP_TOT4, F.CVE_OBS, F.NUM_ALMA, F.ACT_CXC, F.ACT_COI, F.ENLAZADO, "
                     + "F.TIP_DOC_E, F.NUM_MONED, F.TIPCAMB, F.NUM_PAGOS, F.PRIMERPAGO, F.RFC, F.CTLPOL, F.ESCFD, F.AUTORIZA, F.SERIE, F.FOLIO, F.DAT_ENVIO, F.CONTADO, F.CVE_BITA, F.BLOQ, F.FORMAENVIO, "
@@ -349,13 +349,13 @@ public class PolizaBean extends Conexion implements Serializable {
             //**210200100000000000002 I.E.P.S. PAGADO HABER**//
             int sumaPartidas = buscarTotalPartidasAuxiliar(ejercicioAnio, mesPeriodo, numpol, auxliar);
             String sql3 = "INSERT INTO " + auxliar + " (TIPO_POLI, NUM_POLIZ, NUM_PART, PERIODO, EJERCICIO, NUM_CTA, FECHA_POL, CONCEP_PO, DEBE_HABER, MONTOMOV, NUMDEPTO,TIPCAMBIO,CONTRAPAR,ORDEN, CCOSTOS, CGRUPOS) "
-                    + "VALUES ('Ig','" + numpol + "'," + sumaPartidas + ",'" + mesPeriodo + "','" + ejercicioAnio + "','210200100000000000002','" + fechaDoc + "','TRA-" + numpol.trim() + " ABONO DE CLIENTES F-" + cveDoc + " / " + nombreProveedor + "','H','" + imp1 + "','0','" + tipoCambio + "','0','3','0','0');";
+                    + "VALUES ('Ig','" + numpol + "'," + sumaPartidas + ",'" + mesPeriodo + "','" + ejercicioAnio + "','210200100000000000002','" + fechaDoc + "','TRA-" + numpol.trim() + " ABONO DE CLIENTES F-" + cveDoc + " / " + nombreProveedor + "','H','" + imp1 + "','0','" + tipoCambio + "','0','" + sumaPartidas + "','0','0');";
             PreparedStatement ps3 = getCnCoi().prepareStatement(sql3);
             ps3.executeUpdate();
             //**210100100000000000002 I.E.P.S. PENDIENTE DE PAGO DEBE**//
             int sumaPartidas2 = buscarTotalPartidasAuxiliar(ejercicioAnio, mesPeriodo, numpol, auxliar);
             String sql4 = "INSERT INTO " + auxliar + " (TIPO_POLI, NUM_POLIZ, NUM_PART, PERIODO, EJERCICIO, NUM_CTA, FECHA_POL, CONCEP_PO, DEBE_HABER, MONTOMOV, NUMDEPTO,TIPCAMBIO,CONTRAPAR,ORDEN, CCOSTOS, CGRUPOS) "
-                    + "VALUES ('Ig','" + numpol + "'," + sumaPartidas2 + ",'" + mesPeriodo + "','" + ejercicioAnio + "','210100100000000000002','" + fechaDoc + "','TRA-" + numpol.trim() + " ABONO DE CLIENTES F-" + cveDoc + " / " + nombreProveedor + "','D','" + imp1 + "','0','" + tipoCambio + "','0','4','0','0');";
+                    + "VALUES ('Ig','" + numpol + "'," + sumaPartidas2 + ",'" + mesPeriodo + "','" + ejercicioAnio + "','210100100000000000002','" + fechaDoc + "','TRA-" + numpol.trim() + " ABONO DE CLIENTES F-" + cveDoc + " / " + nombreProveedor + "','D','" + imp1 + "','0','" + tipoCambio + "','0','" + sumaPartidas2 + "','0','0');";
             PreparedStatement ps4 = getCnCoi().prepareStatement(sql4);
             ps4.executeUpdate();
             actualizarEstado(cveDoc);
